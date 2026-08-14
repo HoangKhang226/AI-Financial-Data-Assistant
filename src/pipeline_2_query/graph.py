@@ -247,18 +247,18 @@ def regenerate_code(state: QueryState, **kwargs) -> dict:
 
     regen_prompt = f"""<task>Sua lai code Python dua tren phan tich loi.</task>
 
-<error_analysis>{state["error_analysis"]}</error_analysis>
+<error_analysis>{str(state["error_analysis"])[:500]}</error_analysis>
 
 <previous_code>
 {state["generated_code"]}
 </previous_code>
 
 <traceback>
-{state["exec_error"]}
+{str(state["exec_error"])[:1000]}
 </traceback>
 
 <dataframe_schema>
-{state["df_schema"]}
+{str(state["df_schema"])[:1500]}
 </dataframe_schema>
 
 <question>{state["question"]}</question>
@@ -271,11 +271,19 @@ def regenerate_code(state: QueryState, **kwargs) -> dict:
 </rules>"""
 
     from src.pipeline_2_query.code_generator import generate_code as gen
-    new_code = gen(regen_prompt, llm_client)
+    
+    system_prompt = "You are an expert Python Pandas data analyst. Always output ONLY valid Python code inside ```python ``` blocks. Do not explain."
+    try:
+        new_code = gen(regen_prompt, llm_client, system_prompt=system_prompt)
+        retry_count = state.get("retry_count", 0) + 1
+    except Exception as e:
+        logger.error(f"Failed to regenerate code: {e}")
+        new_code = state.get("generated_code", "")
+        retry_count = MAX_RETRIES
 
     return {
         "generated_code": new_code,
-        "retry_count": state["retry_count"] + 1,
+        "retry_count": retry_count,
     }
 
 

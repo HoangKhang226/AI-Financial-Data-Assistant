@@ -26,6 +26,7 @@ ITEM_PATTERNS = {
     "vốn chủ sở hữu": [r"vốn\s+chủ\s+sở\s+hữu"],
     "hàng tồn kho": [r"hàng\s+tồn\s+kho"],
     "tiền và các khoản tương đương tiền": [r"tiền\s+và\s+các\s+khoản\s+tương\s+đương\s+tiền"],
+    "tiền mặt": [r"tiền\s+mặt", r"tiền\s+gửi\s+ngân\s+hàng"],
     "cho vay khách hàng": [r"cho\s+vay\s+khách\s+hàng"],
     "doanh thu thuần": [r"doanh\s+thu\s+thuần"],
     "doanh thu bán hàng": [r"doanh\s+thu\s+bán\s+hàng"],

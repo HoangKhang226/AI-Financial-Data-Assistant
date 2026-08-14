@@ -53,10 +53,10 @@ Store the final numeric answer in a variable called `result`.
 <rules>
 - The dataframe is ALREADY loaded in the variable `df`. Do NOT use pd.read_csv.
 - ONLY use pandas operations on `df`. Store the final numeric answer in `result`.
-- ALWAYS access columns as strings if they appear as strings in schema (e.g. `df['0']`, `df['1']`, NOT `df[0]`).
-- Do NOT use `df.applymap()` on the whole dataframe. Only apply numeric conversion to specific columns or cells, because column '0' contains text.
-- Do NOT search for exact full strings from the question (e.g. "Tổng tài sản AAA năm 2017"). Instead, use `str.contains()` to find matching rows (e.g. `df['0'].str.contains('Tổng tài sản', case=False, na=False)`).
+- ALWAYS use `.iloc` for column access if you are not sure of the exact column name. The first column is usually the metric name (e.g., `df.iloc[:, 0]`), and subsequent columns are values for specific years.
+- Do NOT search for exact full strings from the question (e.g. "Tổng tài sản AAA năm 2017"). Instead, use `str.contains()` on the first column to find matching rows (e.g. `df.iloc[:, 0].astype(str).str.contains('Tổng tài sản', case=False, na=False)`).
 - Handle Vietnamese number format (dots = thousands, comma = decimal) and negative values in parentheses: `(1.234)` means `-1234`.
+- If the mask matches nothing (i.e. `not row_mask.any()`), do NOT access `.values[0]`. Assign `result = None`.
 - Do NOT use print().
 </rules>
 
@@ -67,21 +67,26 @@ import numpy as np
 
 # Find the row containing the financial metric using keywords from the question
 # Example: If the question asks for "Lợi nhuận", search for "Lợi nhuận"
-row_mask = df['0'].str.contains('YOUR_METRIC_KEYWORD', case=False, na=False)
+row_mask = df.iloc[:, 0].astype(str).str.contains('YOUR_METRIC_KEYWORD', case=False, na=False)
 if not row_mask.any():
-    row_mask = df['0'].str.contains('ALTERNATIVE_KEYWORD', case=False, na=False)
+    row_mask = df.iloc[:, 0].astype(str).str.contains('ALTERNATIVE_KEYWORD', case=False, na=False)
 
-# Extract the value from the correct column (e.g. '1' for the requested year)
-raw_value = df.loc[row_mask, 'YOUR_YEAR_COLUMN'].values[0]
-
-# Clean the string and convert to float
-if pd.isna(raw_value):
-    result = None
+if row_mask.any():
+    # Target the column for the requested year
+    year_cols = [col for col in df.columns if 'YOUR_YEAR' in str(col)]
+    target_col = year_cols[0] if year_cols else df.columns[1]
+    
+    raw_value = df.loc[row_mask, target_col].values[0]
+    
+    if pd.isna(raw_value):
+        result = None
+    else:
+        val_str = str(raw_value).replace('.', '').strip()
+        if '(' in val_str and ')' in val_str:
+            val_str = '-' + val_str.replace('(', '').replace(')', '')
+        result = float(val_str.replace(',', '.'))
 else:
-    val_str = str(raw_value).replace('.', '').strip()
-    if '(' in val_str and ')' in val_str:
-        val_str = '-' + val_str.replace('(', '').replace(')', '')
-    result = float(val_str.replace(',', '.'))
+    result = None
 ```
 </example_code>"""
 
