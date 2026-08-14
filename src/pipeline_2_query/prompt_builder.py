@@ -51,6 +51,7 @@ Store the final numeric answer in a variable called `result`.
 <question>{question}</question>
 
 <rules>
+- The dataframe is ALREADY loaded in the variable `df`. Do NOT use pd.read_csv.
 - Use only pandas operations on the variable `df`
 - Handle Vietnamese number format (dots = thousands, comma = decimal)
 - Handle negative values in parentheses: (1.234) means -1234

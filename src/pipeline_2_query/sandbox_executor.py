@@ -30,13 +30,14 @@ def execute_code(
     Returns:
         (success, result_value, error_message)
     """
+    abs_csv_path = os.path.abspath(df_csv_path)
     # Build the wrapper script
     wrapper = f"""
 import pandas as pd
 import sys
 import json
 
-df = pd.read_csv(r"{df_csv_path}", encoding="utf-8-sig")
+df = pd.read_csv(r"{abs_csv_path}", encoding="utf-8-sig")
 
 {code}
 
@@ -53,7 +54,7 @@ else:
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=os.path.dirname(df_csv_path) or ".",
+            cwd=os.path.dirname(abs_csv_path) or ".",
         )
 
         if proc.returncode != 0:
