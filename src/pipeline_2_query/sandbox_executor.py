@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 def execute_code(
     code: str,
     df_csv_path: str,
-    timeout: int = 5,
+    timeout: int = 15,
 ) -> Tuple[bool, Any, str]:
     """Execute Pandas code in a restricted subprocess.
 
@@ -54,7 +54,6 @@ else:
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=os.path.dirname(abs_csv_path) or ".",
         )
 
         if proc.returncode != 0:
