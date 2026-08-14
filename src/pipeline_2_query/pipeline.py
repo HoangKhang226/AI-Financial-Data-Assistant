@@ -69,8 +69,8 @@ def run_query(
             embedding_client = EmbeddingClient(device="cpu")
             reranker_client = RerankerClient(device="cpu")
             searcher = HybridSearcher(
-                dense_dir=abs_path("data/index/dense_vectors"),
-                bm25_dir=abs_path("data/index/bm25_index"),
+                dense_dir=os.path.join(index_dir, "dense_vectors"),
+                bm25_dir=os.path.join(index_dir, "bm25_index"),
             )
             searcher.load()
             logger.info("LLM pipeline initialized (vLLM + BGE-M3 + BM25 + Reranker)")
@@ -262,6 +262,7 @@ if __name__ == "__main__":
     parser.add_argument("--code-stock", type=str, default=abs_path("data/ViFinQA/code_stock.csv"))
     parser.add_argument("--metadata", type=str, default=abs_path("data/metadata"))
     parser.add_argument("--csv-warehouse", type=str, default=abs_path("data/csv_warehouse"))
+    parser.add_argument("--index", type=str, default=abs_path("data/index"))
     parser.add_argument("--output", type=str, default=abs_path("output/submission.json"))
     parser.add_argument("--checkpoint", type=str, default=abs_path("output/checkpoint_results.jsonl"))
     parser.add_argument("--use-llm", action="store_true", help="Enable LLM code generation")
@@ -280,6 +281,7 @@ if __name__ == "__main__":
         csv_warehouse_dir=args.csv_warehouse,
         output_path=args.output,
         checkpoint_path=args.checkpoint,
+        index_dir=args.index,
         use_llm=args.use_llm,
         verbose=args.verbose,
     )
