@@ -253,7 +253,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run Pipeline 2 Query (LangGraph)")
     parser.add_argument("--questions", type=str, default="data/test_questions.jsonl")
-    parser.add_argument("--code-stock", type=str, default="")
+    parser.add_argument("--code-stock", type=str, default="data/ViFinQA/code_stock.csv")
     parser.add_argument("--metadata", type=str, default="data/metadata")
     parser.add_argument("--csv-warehouse", type=str, default="data/csv_warehouse")
     parser.add_argument("--output", type=str, default="output/submission.json")
