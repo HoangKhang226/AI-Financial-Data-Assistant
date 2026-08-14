@@ -35,17 +35,17 @@ class RerankerClient:
             return
 
         try:
-            from FlagEmbedding import FlagReranker
-            self._model = FlagReranker(
+            from sentence_transformers import CrossEncoder
+            self._model = CrossEncoder(
                 self.model_name,
-                use_fp16=(self.device != "cpu"),
                 device=self.device,
+                max_length=self.max_length
             )
-            logger.info(f"Reranker model loaded on {self.device}")
+            logger.info(f"Reranker model loaded on {self.device} via CrossEncoder")
         except ImportError as e:
             raise ImportError(
-                f"Failed to import FlagEmbedding. Original error: {e}. "
-                "Ensure it is installed: pip install FlagEmbedding"
+                f"Failed to import CrossEncoder. Original error: {e}. "
+                "Ensure it is installed: pip install sentence-transformers"
             )
 
     def rerank(
@@ -70,9 +70,7 @@ class RerankerClient:
             return []
 
         pairs = [[query, doc] for doc in documents]
-        scores = self._model.compute_score(
-            pairs, batch_size=self.batch_size, max_length=self.max_length
-        )
+        scores = self._model.predict(pairs)
 
         # Handle single score (not a list)
         if isinstance(scores, (int, float)):
