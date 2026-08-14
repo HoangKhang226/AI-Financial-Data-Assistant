@@ -34,17 +34,14 @@ def extract_python_code(text: str) -> str:
     Handles ```python...``` blocks and bare code.
     """
     # Try to extract from markdown code blocks
-    pattern = r"```(?:python)?\s*\n(.*?)```"
-    matches = re.findall(pattern, text, re.DOTALL)
+    pattern = r"```(?:python|py)?\s*\n(.*?)\n?```"
+    matches = re.findall(pattern, text, re.DOTALL | re.IGNORECASE)
     if matches:
-        return matches[0].strip()
+        return matches[-1].strip()
 
-    # If no code block, try to find lines that look like Python
-    lines = text.strip().split("\n")
-    code_lines = []
-    for line in lines:
-        stripped = line.strip()
-        if stripped and not stripped.startswith("#") or stripped.startswith("import"):
-            code_lines.append(line)
-
-    return "\n".join(code_lines).strip() if code_lines else text.strip()
+    # If no markdown block is found, see if it just returned raw code
+    if "import pandas" in text or "df[" in text or "result =" in text:
+        return text.strip()
+        
+    logger.error("Failed to extract Python code from LLM output")
+    return ""

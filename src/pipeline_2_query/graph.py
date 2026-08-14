@@ -165,7 +165,10 @@ def generate_code(state: QueryState, **kwargs) -> dict:
     )
 
     from src.pipeline_2_query.code_generator import generate_code as gen
-    code = gen(prompt, llm_client)
+    
+    system_prompt = "You are an expert Python Pandas data analyst. Always output ONLY valid Python code inside ```python ``` blocks. Do not explain."
+    
+    code = gen(prompt, llm_client, system_prompt=system_prompt)
     return {"generated_code": code}
 
 
