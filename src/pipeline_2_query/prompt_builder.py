@@ -52,12 +52,37 @@ Store the final numeric answer in a variable called `result`.
 
 <rules>
 - The dataframe is ALREADY loaded in the variable `df`. Do NOT use pd.read_csv.
-- Use only pandas operations on the variable `df`
-- Handle Vietnamese number format (dots = thousands, comma = decimal)
-- Handle negative values in parentheses: (1.234) means -1234
-- Store final answer in `result` variable
-- Do NOT use print()
-</rules>"""
+- ONLY use pandas operations on `df`. Store the final numeric answer in `result`.
+- ALWAYS access columns as strings if they appear as strings in schema (e.g. `df['0']`, `df['1']`, NOT `df[0]`).
+- Do NOT use `df.applymap()` on the whole dataframe. Only apply numeric conversion to specific columns or cells, because column '0' contains text.
+- Do NOT search for exact full strings from the question (e.g. "Tổng tài sản AAA năm 2017"). Instead, use `str.contains()` to find matching rows (e.g. `df['0'].str.contains('Tổng tài sản', case=False, na=False)`).
+- Handle Vietnamese number format (dots = thousands, comma = decimal) and negative values in parentheses: `(1.234)` means `-1234`.
+- Do NOT use print().
+</rules>
+
+<example_code>
+```python
+import pandas as pd
+import numpy as np
+
+# Find the row containing the financial metric
+row_mask = df['0'].str.contains('Tổng doanh thu', case=False, na=False)
+if not row_mask.any():
+    row_mask = df['0'].str.contains('doanh thu', case=False, na=False)
+
+# Extract the value from column '1' (which corresponds to the target year)
+raw_value = df.loc[row_mask, '1'].values[0]
+
+# Clean the string and convert to float
+if pd.isna(raw_value):
+    result = None
+else:
+    val_str = str(raw_value).replace('.', '').strip()
+    if '(' in val_str and ')' in val_str:
+        val_str = '-' + val_str.replace('(', '').replace(')', '')
+    result = float(val_str.replace(',', '.'))
+```
+</example_code>"""
 
     return prompt
 
