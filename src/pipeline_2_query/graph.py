@@ -116,7 +116,8 @@ def hybrid_search(state: QueryState, **kwargs) -> dict:
             # Rerank if available
             if reranker_client:
                 from src.pipeline_2_query.reranker import rerank_documents
-                summaries_map = _load_summaries_map()
+                index_dir = kwargs.get("index_dir", "data/index")
+                summaries_map = _load_summaries_map(os.path.join(index_dir, "summaries.jsonl"))
                 doc_ids = [did for did, _ in search_results[:10]]
                 doc_texts = [summaries_map.get(did, "") for did in doc_ids]
                 reranked = rerank_documents(
@@ -449,7 +450,7 @@ def build_query_graph(
 # ══════════════════════════════════════════════════════════════
 
 def _load_summaries_map(
-    summaries_path: str = "data/index/summaries.jsonl",
+    summaries_path: str,
 ) -> dict:
     """Load doc_id → summary map for reranking."""
     import json
