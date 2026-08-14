@@ -59,10 +59,10 @@ class LLMClient:
                 },
             )
             logger.info("vLLM model loaded via LlamaIndex successfully")
-        except ImportError:
+        except ImportError as e:
             raise ImportError(
-                "llama-index-llms-vllm is not installed. "
-                "Run: pip install llama-index-llms-vllm vllm"
+                f"Failed to load vLLM. Original error: {e}. "
+                "Ensure llama-index-llms-vllm and vllm are installed correctly."
             )
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
