@@ -153,23 +153,10 @@ if __name__ == "__main__":
     print("STARTING PIPELINE 1: INGESTION")
     print("="*60)
     
-    # Run only for a small sample first if it's too large, but for now run on everything it finds
-    # We can limit the input directory to just AAA for testing
-    test_input = os.path.join(args.input, "AAA", "2017")
-    if os.path.exists(test_input):
-        print(f"Running on sample directory: {test_input}")
-        run_ingestion(
-            test_input, 
-            args.csv_out, 
-            args.meta_out, 
-            args.summ_out, 
-            args.verbose
-        )
-    else:
-        run_ingestion(
-            args.input, 
-            args.csv_out, 
-            args.meta_out, 
-            args.summ_out, 
-            args.verbose
-        )
+    run_ingestion(
+        args.input, 
+        args.csv_out, 
+        args.meta_out, 
+        args.summ_out, 
+        args.verbose
+    )
