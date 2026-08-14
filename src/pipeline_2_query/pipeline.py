@@ -141,6 +141,7 @@ def run_query(
                 print(f"[{i+1}/{len(questions)}] Q{qid}: {question[:80]}...")
 
             # Run through LangGraph
+            final_state = {}
             try:
                 initial_state = {
                     "question_id": str(qid),
@@ -159,17 +160,22 @@ def run_query(
                     "exec_error": "",
                     "retry_count": 0,
                     "error_analysis": "",
-                    "final_answer": "0",
+                    "final_answer": "",
                 }
 
                 final_state = graph.invoke(initial_state)
-                answer_str = final_state.get("final_answer", "0")
-                success = answer_str != "0" and answer_str != ""
+                success = final_state.get("exec_success", False)
+                answer_str = final_state.get("final_answer", "")
+                
+                # Check for RAG fallback vs Execution
+                if not final_state.get("top_csv_path"):
+                    # This means it triggered fallback
+                    answer_str = final_state.get("final_answer", "Không tìm thấy dữ liệu")
 
             except Exception as e:
                 logger.error(f"LangGraph error on Q{qid}: {e}")
-                answer_str = "0"
                 success = False
+                answer_str = f"Error: {str(e)}"
 
             elapsed = (time.time() - start) * 1000
 
@@ -177,6 +183,10 @@ def run_query(
             relevant_docs = []
             relevant_tables = []
             evidence = []
+            
+            if final_state.get("top_csv_path"):
+                evidence.append(final_state["top_csv_path"])
+
             pandas_query = final_state.get("generated_code", "")
 
             top_csv = final_state.get("top_csv_path", "")

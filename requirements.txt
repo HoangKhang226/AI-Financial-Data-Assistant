@@ -4,7 +4,7 @@ pandas
 vllm==0.6.6
 autoawq
 accelerate>=0.31.0
-transformers>=4.43.0
+transformers==4.45.0
 torch
 
 # ── Retrieval & Orchestration ──
