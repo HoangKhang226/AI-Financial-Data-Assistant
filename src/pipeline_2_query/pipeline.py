@@ -251,13 +251,16 @@ if __name__ == "__main__":
     if root_dir not in sys.path:
         sys.path.insert(0, root_dir)
 
+    def abs_path(p):
+        return os.path.join(root_dir, p) if p and not os.path.isabs(p) else p
+
     parser = argparse.ArgumentParser(description="Run Pipeline 2 Query (LangGraph)")
-    parser.add_argument("--questions", type=str, default="data/test_questions.jsonl")
-    parser.add_argument("--code-stock", type=str, default="data/ViFinQA/code_stock.csv")
-    parser.add_argument("--metadata", type=str, default="data/metadata")
-    parser.add_argument("--csv-warehouse", type=str, default="data/csv_warehouse")
-    parser.add_argument("--output", type=str, default="output/submission.json")
-    parser.add_argument("--checkpoint", type=str, default="output/checkpoint_results.jsonl")
+    parser.add_argument("--questions", type=str, default=abs_path("data/test_questions.jsonl"))
+    parser.add_argument("--code-stock", type=str, default=abs_path("data/ViFinQA/code_stock.csv"))
+    parser.add_argument("--metadata", type=str, default=abs_path("data/metadata"))
+    parser.add_argument("--csv-warehouse", type=str, default=abs_path("data/csv_warehouse"))
+    parser.add_argument("--output", type=str, default=abs_path("output/submission.json"))
+    parser.add_argument("--checkpoint", type=str, default=abs_path("output/checkpoint_results.jsonl"))
     parser.add_argument("--use-llm", action="store_true", help="Enable LLM code generation")
     parser.add_argument("--verbose", action="store_true", default=True)
 
