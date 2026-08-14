@@ -42,10 +42,10 @@ class RerankerClient:
                 device=self.device,
             )
             logger.info(f"Reranker model loaded on {self.device}")
-        except ImportError:
+        except ImportError as e:
             raise ImportError(
-                "FlagEmbedding is not installed. "
-                "Run: pip install FlagEmbedding"
+                f"Failed to import FlagEmbedding. Original error: {e}. "
+                "Ensure it is installed: pip install FlagEmbedding"
             )
 
     def rerank(
