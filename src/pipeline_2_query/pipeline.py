@@ -169,7 +169,40 @@ def run_query(
 
             elapsed = (time.time() - start) * 1000
 
+            # Fetch metadata for the top CSV to build submission details
+            relevant_docs = []
+            relevant_tables = []
+            evidence = []
+            pandas_query = final_state.get("generated_code", "")
+
+            top_csv = final_state.get("top_csv_path", "")
+            if top_csv and os.path.exists(top_csv):
+                # We need to construct evidence array
+                evidence.append({
+                    "variable": "df",
+                    "csv_path": f"data/{os.path.basename(top_csv)}"
+                })
+                
+                # Fetch metadata to get source_file and line_number
+                meta_path = os.path.join(
+                    "data/metadata", 
+                    os.path.basename(top_csv).replace(".csv", ".json")
+                )
+                if os.path.exists(meta_path):
+                    with open(meta_path, "r", encoding="utf-8") as f:
+                        meta = json.load(f)
+                    source_file = meta.get("source_file", "")
+                    if source_file:
+                        doc_id = os.path.basename(source_file)
+                        if doc_id.endswith(".txt"):
+                            doc_id = doc_id[:-4]
+                        
+                        relevant_docs.append(doc_id)
+                        line_num = meta.get("line_number", 0)
+                        relevant_tables.append(f"{doc_id}|{line_num}")
+
             result = {
+                "id": int(qid) if str(qid).isdigit() else qid,
                 "question_id": qid,
                 "question": question,
                 "answer": answer_str,
@@ -177,6 +210,10 @@ def run_query(
                 "success": success,
                 "time_ms": elapsed,
                 "retries": final_state.get("retry_count", 0) if 'final_state' in dir() else 0,
+                "relevant_docs": relevant_docs,
+                "relevant_tables": relevant_tables,
+                "evidence": evidence,
+                "pandas_query": pandas_query,
             }
             results.append(result)
 
