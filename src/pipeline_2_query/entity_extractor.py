@@ -141,8 +141,11 @@ class EntityExtractor:
                 tickers.append(t); seen.add(t)
 
         # Strategy 2: Standalone uppercase tickers
+        ignore_words = {"TMCP", "CTCP", "TNHH", "BCTC", "VNĐ", "VND", "USD", "Q1", "Q2", "Q3", "Q4"}
         for m in self._ticker_pat.finditer(question):
             t = m.group(1)
+            if t in ignore_words:
+                continue
             if (no_stock or t in self.ticker_set) and t not in seen:
                 tickers.append(t); seen.add(t)
 
