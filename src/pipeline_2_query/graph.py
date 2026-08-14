@@ -99,19 +99,17 @@ def hybrid_search(state: QueryState, **kwargs) -> dict:
                 candidate_doc_ids.extend(doc_ids)
 
     if not candidate_doc_ids:
-        logger.warning(f"Q{state['question_id']}: No metadata candidates")
-        return {
-            "candidate_doc_ids": [],
-            "top_csv_path": "",
-            "df_schema": "",
-        }
+        logger.warning(f"Q{state['question_id']}: No metadata candidates. Falling back to global search.")
+        scope_doc_ids = None
+    else:
+        scope_doc_ids = candidate_doc_ids
 
     # Step B: Hybrid search (if searcher available)
-    top_doc_id = candidate_doc_ids[0]  # default: first candidate
+    top_doc_id = candidate_doc_ids[0] if candidate_doc_ids else None
     if searcher:
         search_results = searcher.search(
             state["question"], top_k=10,
-            scope_doc_ids=candidate_doc_ids,
+            scope_doc_ids=scope_doc_ids,
             embedding_client=embedding_client,
         )
         if search_results:
@@ -129,6 +127,13 @@ def hybrid_search(state: QueryState, **kwargs) -> dict:
                     top_doc_id = reranked[0][0]
             else:
                 top_doc_id = search_results[0][0]
+
+    if not top_doc_id:
+        return {
+            "candidate_doc_ids": candidate_doc_ids,
+            "top_csv_path": "",
+            "df_schema": "",
+        }
 
     # Step C: Load CSV and build schema
     csv_path = os.path.join(csv_warehouse_dir, f"{top_doc_id}.csv")
