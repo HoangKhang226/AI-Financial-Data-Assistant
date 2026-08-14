@@ -1,0 +1,30 @@
+# ── Index Configuration ──
+
+# Dense Vector Store (FAISS)
+dense_index:
+  type: "faiss"
+  index_type: "IVFFlat"  # Flat | IVFFlat | IVFPQ
+  nlist: 256
+  nprobe: 32
+  metric: "cosine"
+  save_dir: "data/index/dense_vectors"
+
+# Sparse Index (BM25)
+sparse_index:
+  type: "bm25"
+  algorithm: "BM25Okapi"
+  k1: 1.5
+  b: 0.75
+  save_dir: "data/index/bm25_index"
+
+# Hybrid Search
+hybrid_search:
+  dense_weight: 0.6
+  sparse_weight: 0.4
+  fusion: "rrf"         # rrf | weighted_sum
+  rrf_k: 60
+  top_k: 20
+
+# Summaries
+summaries:
+  save_path: "data/index/summaries.jsonl"

@@ -48,7 +48,7 @@
 │   │   ├── code_generator.py             # Qwen2.5-Coder-14B-Instruct → sinh mã Python Pandas
 │   │   ├── sandbox_executor.py           # subprocess.run() cách ly, timeout=5s, capture stderr
 │   │   ├── self_correction.py            # Gửi traceback + code lỗi cho LLM sửa (max 3 retries)
-│   │   ├── fallback_rag.py              # Direct RAG: trích xuất số từ DataFrame nếu code gen thất bại
+│   │   ├── fallback_rag.py               # Direct RAG: trích xuất số từ DataFrame nếu code gen thất bại
 │   │   ├── unit_converter.py             # Ma trận quy đổi VND↔triệu↔tỷ↔nghìn tỷ
 │   │   ├── submission_formatter.py       # Đóng gói JSON theo chuẩn R2AI2026 submission format
 │   │   └── pipeline.py                   # Điều phối Pipeline 2: run_query(questions, index, output)
@@ -87,35 +87,35 @@
 
 ## Thống kê dữ liệu
 
-| Mục | Giá trị |
-|---|---|
-| File OCR .txt | 1,973 |
-| Bảng HTML inline | 146,246 |
-| Bảng có colspan | 56,941 (38.9%) |
-| Bảng có rowspan | 45,338 (31.0%) |
-| Công ty (tickers) | 100 |
-| Giai đoạn | 2015–2025 |
-| Câu hỏi kiểm thử | 1,012 |
-| Dung lượng text thô | ~363 MiB |
+| Mục                 | Giá trị        |
+| ------------------- | -------------- |
+| File OCR .txt       | 1,973          |
+| Bảng HTML inline    | 146,246        |
+| Bảng có colspan     | 56,941 (38.9%) |
+| Bảng có rowspan     | 45,338 (31.0%) |
+| Công ty (tickers)   | 100            |
+| Giai đoạn           | 2015–2025      |
+| Câu hỏi kiểm thử    | 1,012          |
+| Dung lượng text thô | ~363 MiB       |
 
 ## Ràng buộc cuộc thi R2AI2026
 
-| Ràng buộc | Giá trị |
-|---|---|
-| LLM | Open-source, ≤14B params, phát hành trước 01/06/2026 |
-| API đóng | ❌ Không dùng GPT-4o, Gemini, Cohere, Claude |
-| Nộp bài | submission.zip = submission.json + data/*.csv |
-| Giới hạn nộp | 10 bài/ngày (Public), 5 bài tổng cộng (Private) |
-| Deadline | Public: 01-31/08/2026, Private: 01-03/09/2026 |
+| Ràng buộc    | Giá trị                                              |
+| ------------ | ---------------------------------------------------- |
+| LLM          | Open-source, ≤14B params, phát hành trước 01/06/2026 |
+| API đóng     | ❌ Không dùng GPT-4o, Gemini, Cohere, Claude         |
+| Nộp bài      | submission.zip = submission.json + data/\*.csv       |
+| Giới hạn nộp | 10 bài/ngày (Public), 5 bài tổng cộng (Private)      |
+| Deadline     | Public: 01-31/08/2026, Private: 01-03/09/2026        |
 
 ## Stack kỹ thuật
 
-| Thành phần | Công nghệ |
-|---|---|
-| Code LLM | Qwen2.5-Coder-14B-Instruct (GPTQ 4-bit) |
-| Embedding | BAAI/bge-m3 (1024-dim) |
-| Reranker | BAAI/bge-reranker-v2-m3 |
-| Sparse Search | BM25Okapi (rank-bm25) |
-| HTML Parser | BeautifulSoup4 |
-| Execution | subprocess.run() (cách ly tiến trình) |
-| Data Models | Pydantic v2 |
+| Thành phần    | Công nghệ                               |
+| ------------- | --------------------------------------- |
+| Code LLM      | Qwen2.5-Coder-14B-Instruct (GPTQ 4-bit) |
+| Embedding     | BAAI/bge-m3 (1024-dim)                  |
+| Reranker      | BAAI/bge-reranker-v2-m3                 |
+| Sparse Search | BM25Okapi (rank-bm25)                   |
+| HTML Parser   | BeautifulSoup4                          |
+| Execution     | subprocess.run() (cách ly tiến trình)   |
+| Data Models   | Pydantic v2                             |

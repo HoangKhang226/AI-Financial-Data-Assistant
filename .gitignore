@@ -1,11 +1,15 @@
-# Ignore data directory
-data/
-
+# Ignore generated data artifacts and outputs
+data/csv_warehouse/
+data/metadata/
+data/index/
+data/ViFinQA/
+output/
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.ipynb
 .Python
 env/
 build/

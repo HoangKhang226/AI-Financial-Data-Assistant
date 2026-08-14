@@ -1,0 +1,30 @@
+# ── Model Configuration ──
+# Qwen2.5-Coder-14B-Instruct (Code LLM)
+code_llm:
+  model_name: "Qwen/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4"
+  max_new_tokens: 1024
+  temperature: 0.1
+  top_p: 0.95
+  repetition_penalty: 1.05
+  backend: "vllm"  # vllm | transformers | llama_cpp
+  # vLLM optimizations for Colab T4 (15GB VRAM)
+  gpu_memory_utilization: 0.95
+  max_model_len: 4096
+  enforce_eager: true
+
+# BAAI/bge-m3 (Dense Embedding)
+embedding:
+  model_name: "BAAI/bge-m3"
+  dimension: 1024
+  max_length: 512  # Giảm max_length xuống 512 cho queries
+  batch_size: 1
+  normalize: true
+  device: "cpu"    # Bắt buộc chạy CPU để nhường 15GB VRAM cho vLLM
+
+# BAAI/bge-reranker-v2-m3 (Cross-Encoder Reranker)
+reranker:
+  model_name: "BAAI/bge-reranker-v2-m3"
+  max_length: 512
+  batch_size: 1
+  top_k: 5
+  device: "cpu"    # Bắt buộc chạy CPU để nhường 15GB VRAM cho vLLM

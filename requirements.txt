@@ -1,0 +1,21 @@
+# ── Core Data ──
+pandas
+beautifulsoup4
+pydantic
+
+# ── LlamaIndex Core + Integrations ──
+llama-index-core
+llama-index-embeddings-huggingface
+llama-index-llms-vllm
+llama-index-readers-file
+
+# ── Retrieval ──
+rank_bm25
+sentence-transformers
+FlagEmbedding
+
+# ── Orchestration ──
+langgraph>=0.2.0
+
+# ── Utilities ──
+pyyaml
