@@ -62,6 +62,11 @@ ALIAS_MAP = {
     "hoa sen": "HSG", "viglacera": "VGC",
     "nhựa an phát xanh": "AAA", "an phát": "AAA",
     "đường quảng ngãi": "QNS", "lọc hóa dầu": "BSR",
+    "hoà phát": "HPG", # typo variation
+    "phân bón dầu khí cà mau": "DCM",
+    "phân bón và hóa chất dầu khí": "DPM",
+    "công nghiệp cao su việt nam": "GVR",
+    "hpx": "HPX", "kbc": "KBC", "nvl": "NVL", "vic": "VIC", "vpi": "VPI", "vre": "VRE",
 }
 
 
@@ -88,6 +93,10 @@ class EntityExtractor:
         self._ticker_parens = re.compile(r"\(([A-Z][A-Z0-9]{1,3})\)")
 
     def _load_code_stock(self, path: str) -> None:
+        import os
+        if not os.path.exists(path):
+            logger.warning(f"code_stock file not found: {path}")
+            return
         df = pd.read_csv(path)
         self.ticker_set = set(df["Mã CK"].tolist())
         for _, row in df.iterrows():
