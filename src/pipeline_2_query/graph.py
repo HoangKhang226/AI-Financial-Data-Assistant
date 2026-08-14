@@ -201,6 +201,13 @@ def execute_code(state: QueryState, **kwargs) -> dict:
 
 def reflect_on_error(state: QueryState, **kwargs) -> dict:
     """Node 6: LLM analyzes WHY the code failed (root cause analysis)."""
+    
+    # ── LOG FULL CODE AND ERROR FOR DEBUGGING ──
+    logger.error(f"========== Q{state['question_id']} CODE FAILED ==========")
+    logger.error(f"CODE:\n{state['generated_code']}")
+    logger.error(f"ERROR:\n{state['exec_error']}")
+    logger.error("===========================================")
+    
     llm_client = kwargs.get("llm_client")
     if not llm_client:
         return {"error_analysis": state["exec_error"]}
@@ -221,11 +228,12 @@ def reflect_on_error(state: QueryState, **kwargs) -> dict:
 
 <instructions>
 1. Xac dinh nguyen nhan goc re cua loi (sai ten cot? sai kieu du lieu? logic sai?)
-2. De xuat cach sua cu the (1-2 cau ngan gon)
+2. De xuat cach sua cu extreme (1-2 cau ngan gon)
 3. Chu y: Du lieu tai chinh Viet Nam dung dau cham phan cach hang nghin, dau ngoac () la so am
 </instructions>"""
 
-    analysis = llm_client.generate(reflect_prompt)
+    system_prompt = "You are a Python debugging expert. Analyze the error and provide a fix."
+    analysis = llm_client.generate(reflect_prompt, system_prompt=system_prompt)
     logger.info(f"Q{state['question_id']} Reflect: {analysis[:100]}...")
 
     return {"error_analysis": analysis}
