@@ -65,13 +65,14 @@ Store the final numeric answer in a variable called `result`.
 import pandas as pd
 import numpy as np
 
-# Find the row containing the financial metric
-row_mask = df['0'].str.contains('Tổng doanh thu', case=False, na=False)
+# Find the row containing the financial metric using keywords from the question
+# Example: If the question asks for "Lợi nhuận", search for "Lợi nhuận"
+row_mask = df['0'].str.contains('YOUR_METRIC_KEYWORD', case=False, na=False)
 if not row_mask.any():
-    row_mask = df['0'].str.contains('doanh thu', case=False, na=False)
+    row_mask = df['0'].str.contains('ALTERNATIVE_KEYWORD', case=False, na=False)
 
-# Extract the value from column '1' (which corresponds to the target year)
-raw_value = df.loc[row_mask, '1'].values[0]
+# Extract the value from the correct column (e.g. '1' for the requested year)
+raw_value = df.loc[row_mask, 'YOUR_YEAR_COLUMN'].values[0]
 
 # Clean the string and convert to float
 if pd.isna(raw_value):
