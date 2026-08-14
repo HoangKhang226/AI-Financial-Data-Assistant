@@ -13,6 +13,8 @@ llama-index-readers-file
 rank_bm25
 sentence-transformers
 FlagEmbedding
+accelerate
+transformers[torch]
 
 # ── Orchestration ──
 langgraph>=0.2.0
