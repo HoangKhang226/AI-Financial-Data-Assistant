@@ -28,6 +28,7 @@ def run_query(
     csv_warehouse_dir: str = "data/csv_warehouse",
     output_path: str = "output/submission.json",
     checkpoint_path: str = "output/checkpoint_results.jsonl",
+    index_dir: str = "data/index",
     use_llm: bool = False,
     verbose: bool = False,
 ) -> Dict:
