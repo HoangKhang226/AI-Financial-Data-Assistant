@@ -44,25 +44,21 @@ class LLMClient:
             return
 
         try:
-            from llama_index.llms.vllm import Vllm
+            from vllm import LLM, SamplingParams
+            self._SamplingParams = SamplingParams
 
-            self._llm = Vllm(
+            self._llm = LLM(
                 model=self.model_name,
                 trust_remote_code=True,
-                max_new_tokens=self.max_new_tokens,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                vllm_kwargs={
-                    "gpu_memory_utilization": self.gpu_memory_utilization,
-                    "max_model_len": self.max_model_len,
-                    "enforce_eager": self.enforce_eager,
-                },
+                gpu_memory_utilization=self.gpu_memory_utilization,
+                max_model_len=self.max_model_len,
+                enforce_eager=self.enforce_eager,
             )
-            logger.info("vLLM model loaded via LlamaIndex successfully")
-        except ImportError as e:
+            logger.info("vLLM model loaded directly successfully")
+        except Exception as e:
             raise ImportError(
                 f"Failed to load vLLM. Original error: {e}. "
-                "Ensure llama-index-llms-vllm and vllm are installed correctly."
+                "Ensure vllm is installed correctly."
             )
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
@@ -77,15 +73,27 @@ class LLMClient:
         """
         self.load()
 
-        from llama_index.core.llms import ChatMessage, MessageRole
-
         messages = []
         if system_prompt:
-            messages.append(ChatMessage(role=MessageRole.SYSTEM, content=system_prompt))
-        messages.append(ChatMessage(role=MessageRole.USER, content=prompt))
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
 
-        response = self._llm.chat(messages)
-        return response.message.content
+        sampling_params = self._SamplingParams(
+            temperature=self.temperature,
+            top_p=self.top_p,
+            max_tokens=self.max_new_tokens
+        )
+
+        try:
+            # Try native vLLM chat API
+            outputs = self._llm.chat(messages, sampling_params=sampling_params, use_tqdm=False)
+            return outputs[0].outputs[0].text
+        except AttributeError:
+            # Fallback for older vLLM versions without .chat()
+            tokenizer = self._llm.get_tokenizer()
+            prompt_str = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            outputs = self._llm.generate([prompt_str], sampling_params, use_tqdm=False)
+            return outputs[0].outputs[0].text
 
     def get_llama_index_llm(self):
         """Return the underlying LlamaIndex LLM object for direct use."""
