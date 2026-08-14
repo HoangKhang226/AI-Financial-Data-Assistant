@@ -27,12 +27,31 @@ class MetadataFilter:
     def load(self) -> None:
         if self._loaded:
             return
-        pattern = os.path.join(self.metadata_dir, "*.json")
-        for fp in glob.glob(pattern):
-            with open(fp, "r", encoding="utf-8") as f:
-                self._index.append(json.load(f))
+        
+        # Optimize FUSE: Only run os.listdir, do NOT open the files!
+        try:
+            filenames = os.listdir(self.metadata_dir)
+        except FileNotFoundError:
+            filenames = []
+            
+        for fn in filenames:
+            if not fn.endswith(".json"):
+                continue
+            doc_id = fn[:-5]
+            parts = doc_id.split("_")
+            if len(parts) >= 3:
+                try:
+                    self._index.append({
+                        "doc_id": doc_id,
+                        "ticker": parts[0],
+                        "year": int(parts[1]),
+                        "report_type": parts[2],
+                        "category": "" # Not used for filtering
+                    })
+                except ValueError:
+                    pass
         self._loaded = True
-        logger.info(f"Loaded {len(self._index)} metadata entries")
+        logger.info(f"Loaded {len(self._index)} metadata entries (fast scan)")
 
     def filter(
         self,
@@ -58,7 +77,7 @@ class MetadataFilter:
 
     def get_doc_ids(
         self, ticker: str = "", year: Optional[int] = None,
-        report_type: str = "",
+        report_type: str = "", category: str = "",
     ) -> List[str]:
         """Get filtered doc_ids for downstream search scoping."""
         return [m["doc_id"] for m in self.filter(ticker, year, report_type)]
