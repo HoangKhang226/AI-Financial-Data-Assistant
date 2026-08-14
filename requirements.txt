@@ -1,23 +1,22 @@
 # ── Core Data ──
 pandas
-beautifulsoup4
-pydantic
+# ── Engine & Core ──
+vllm>=0.5.0
+autoawq
+accelerate>=0.31.0
+transformers>=4.43.0
+torch
 
-# ── LlamaIndex Core + Integrations ──
-llama-index-core
+# ── Retrieval & Orchestration ──
+llama-index-core>=0.10.0
 llama-index-embeddings-huggingface
 llama-index-llms-vllm
-llama-index-readers-file
-
-# ── Retrieval ──
-rank_bm25
-sentence-transformers
-FlagEmbedding
-accelerate
-transformers[torch]
-
-# ── Orchestration ──
 langgraph>=0.2.0
+sentence-transformers>=3.0.0
+rank_bm25
 
-# ── Utilities ──
+# ── Data Processing ──
+beautifulsoup4
+pandas
+pydantic
 pyyaml
