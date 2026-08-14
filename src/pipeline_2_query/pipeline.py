@@ -68,7 +68,10 @@ def run_query(
             llm_client = LLMClient()
             embedding_client = EmbeddingClient(device="cpu")
             reranker_client = RerankerClient(device="cpu")
-            searcher = HybridSearcher()
+            searcher = HybridSearcher(
+                dense_dir=abs_path("data/index/dense_vectors"),
+                bm25_dir=abs_path("data/index/bm25_index"),
+            )
             searcher.load()
             logger.info("LLM pipeline initialized (vLLM + BGE-M3 + BM25 + Reranker)")
         except Exception as e:
